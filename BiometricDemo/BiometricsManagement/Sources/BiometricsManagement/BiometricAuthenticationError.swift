@@ -150,7 +150,7 @@ public enum BiometricAuthenticationError: Error {
     }
 
     private var biometricCancelMessage: String {
-        "Biometric authentication was canceld."
+        "Biometric authentication was cancelledd."
     }
 
     private var biometricNotAvailableMessage: String {

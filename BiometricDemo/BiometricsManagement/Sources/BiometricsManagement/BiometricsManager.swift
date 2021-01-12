@@ -7,27 +7,27 @@ public class BiometricsManager {
     public var state: BiometricsState {
         determineBiometricsState()
     }
-    private var loginReason = "Log in with Biometrics"
-
+    private var reason: String
     private var biometricsState: BiometricsState = .notAvailable(.other)
-    private var biometryType: LABiometryType {
-        return context.biometryType
-    }
-
     private var observer: NSObjectProtocol?
     private var canOwnerAuthenticate = false
     private var canBiometricallyAuthenticate = false
     private var context: LAContextInterface
     private var userDefaults: UserDefaultsInterface
+    private var biometryType: LABiometryType {
+        return context.biometryType
+    }
     private lazy var hasAcceptedBiometricTerms: Bool = {
         userDefaults.bool(forKey: kFaceIDKey)
     }()
 
     /// Init
     public init(
+        reason: String,
         context: LAContextInterface = LAContext(),
         userDefaults: UserDefaultsInterface = UserDefaults.standard
     ) {
+        self.reason = reason
         self.context = context
         self.userDefaults = userDefaults
         determineBiometricsState()
@@ -86,32 +86,39 @@ public class BiometricsManager {
     }
 
     /// Authenticate user
-    func authenticateUser(completion: @escaping (Result<String, Error>) -> Void) {
+    public func authenticateUser(completion: @escaping (Result<Void, Error>) -> Void) {
         determineBiometricsState()
         if case .notAvailable(let error) = biometricsState {
             completion( .failure(error) )
         }
 
-        context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: loginReason) {[weak self] (success, evaluateError) in
+        context.evaluatePolicy(
+            .deviceOwnerAuthentication,
+            localizedReason: reason
+        ) {[weak self] (success, evaluateError) in
+            guard let self = self else {
+                completion(.failure(BiometricAuthenticationError.other))
+                return
+            }
             if success {
                 DispatchQueue.main.async { [weak self] in
                     // User authenticated successfully
                     self?.saveTermsAcceptance()
                     self?.determineBiometricsState()
-                    completion(.success("Success"))
+                    completion(.success(()))
                 }
             } else {
                 guard let error = evaluateError else {
                     fatalError("Must have an error if not a success")
                 }
-                self?.determineBiometricsState()
+                self.determineBiometricsState()
                 guard let laError = error as? LAError else {
                     completion(.failure(error))
                     return
                 }
                 let authenticationError = BiometricAuthenticationError.from(
                     error: laError,
-                    biometryType: self?.context.biometryType ?? .none
+                    biometryType: self.context.biometryType
                 )
                 completion(.failure(authenticationError))
             }

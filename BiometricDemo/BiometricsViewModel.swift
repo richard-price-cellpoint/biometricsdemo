@@ -1,3 +1,4 @@
+import BiometricsManagement
 import Combine
 import UIKit
 
@@ -13,7 +14,7 @@ class BiometricsViewModel: ObservableObject {
 
     /// Init
     public init(
-        biometricsManager: BiometricsManager = BiometricsManager(),
+        biometricsManager: BiometricsManager = BiometricsManager(reason: "Login with Biometrics"),
         notificationCenter: NotificationCenterInterface = NotificationCenter.default
         ) {
         self.biometricsManager = biometricsManager
@@ -33,7 +34,7 @@ class BiometricsViewModel: ObservableObject {
     }
 
     /// Authenticate user
-    public func authenticateUser(completion: @escaping (Result<String, Error>) -> Void) {
+    public func authenticateUser(completion: @escaping (Result<Void, Error>) -> Void) {
         biometricsManager.authenticateUser { [weak self] result in
             guard let self = self else {
                return
