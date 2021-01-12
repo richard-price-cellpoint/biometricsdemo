@@ -1,5 +1,5 @@
 /// Biometrics State
-enum BiometricsState {
+public enum BiometricsState {
     /// Biometrics are not available on the device
     case notAvailable(BiometricAuthenticationError)
     /// Biometrics are available but the user has declined usage

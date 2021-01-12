@@ -126,9 +126,7 @@ struct ContentView: View {
             return
         }
         if UIApplication.shared.canOpenURL(settingsUrl) {
-            UIApplication.shared.open(settingsUrl, completionHandler: { (success) in
-                print("Settings opened: \(success)") // Prints true
-            })
+            UIApplication.shared.open(settingsUrl, completionHandler: { _ in })
         }
     }
 }

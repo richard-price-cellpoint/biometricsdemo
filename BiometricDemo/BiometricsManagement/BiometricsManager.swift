@@ -1,12 +1,15 @@
 import LocalAuthentication
-import SwiftUI
 
 internal let kFaceIDKey = "FaceIDAccepted"
 
 /// Biometrics Manager
 public class BiometricsManager {
-    @Published private ( set ) var biometricsState: BiometricsState = .notAvailable(.other)
+    public var state: BiometricsState {
+        determineBiometricsState()
+    }
+    private var loginReason = "Log in with Biometrics"
 
+    private var biometricsState: BiometricsState = .notAvailable(.other)
     private var biometryType: LABiometryType {
         return context.biometryType
     }
@@ -15,7 +18,6 @@ public class BiometricsManager {
     private var canOwnerAuthenticate = false
     private var canBiometricallyAuthenticate = false
     private var context: LAContextInterface
-    private var notificationCenter: NotificationCenterInterface
     private var userDefaults: UserDefaultsInterface
     private lazy var hasAcceptedBiometricTerms: Bool = {
         userDefaults.bool(forKey: kFaceIDKey)
@@ -24,21 +26,15 @@ public class BiometricsManager {
     /// Init
     public init(
         context: LAContextInterface = LAContext(),
-        notificationCenter: NotificationCenterInterface = NotificationCenter.default,
-        userDefaults: UserDefaultsInterface = UserDefaults.standard) {
+        userDefaults: UserDefaultsInterface = UserDefaults.standard
+    ) {
         self.context = context
-        self.notificationCenter = notificationCenter
         self.userDefaults = userDefaults
-
         determineBiometricsState()
-
-        observer = self.notificationCenter.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
-            self?.determineBiometricsState()
-        }
     }
 
-    /// Determine biometrics state
-    private func determineBiometricsState() {
+    @discardableResult
+    private func determineBiometricsState() -> BiometricsState {
         var error: NSError?
         canPerformOwnerAuthentication(error: &error)
 
@@ -75,6 +71,7 @@ public class BiometricsManager {
         default:
             biometricsState = .notAvailable(authenticationError ?? .other)
         }
+        return biometricsState
     }
 
     private func canPerformOwnerAuthentication(error: NSErrorPointer)  {
@@ -94,8 +91,6 @@ public class BiometricsManager {
         if case .notAvailable(let error) = biometricsState {
             completion( .failure(error) )
         }
-
-        let loginReason = "Log in with Biometrics"
 
         context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: loginReason) {[weak self] (success, evaluateError) in
             if success {
@@ -126,11 +121,5 @@ public class BiometricsManager {
     private func saveTermsAcceptance() {
         userDefaults.set(true, forKey: kFaceIDKey)
         hasAcceptedBiometricTerms = userDefaults.bool(forKey: kFaceIDKey)
-    }
-
-    deinit {
-        if let observer = observer {
-            notificationCenter.removeObserver(observer)
-        }
     }
 }

@@ -1,5 +1,5 @@
 import Combine
-import SwiftUI
+import UIKit
 
 /// Biometrics View Model
 class BiometricsViewModel: ObservableObject {
@@ -8,22 +8,49 @@ class BiometricsViewModel: ObservableObject {
     @Published var isBiometricLoginEnabled = false
 
     private var biometricsManager: BiometricsManager
-    private var cancellables: [AnyCancellable] = []
+    private var observer: NSObjectProtocol?
+    private var notificationCenter: NotificationCenterInterface
 
     /// Init
-    public init(biometricsManager: BiometricsManager = BiometricsManager() ) {
+    public init(
+        biometricsManager: BiometricsManager = BiometricsManager(),
+        notificationCenter: NotificationCenterInterface = NotificationCenter.default
+        ) {
         self.biometricsManager = biometricsManager
-        setUpBindings()
-    }
+        self.notificationCenter = notificationCenter
+        setUpProperties(from: self.biometricsManager.state)
 
+        observer = self.notificationCenter.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self = self else {
+               return
+            }
+            self.setUpProperties(from: self.biometricsManager.state)
+        }
+    }
 
     /// Authenticate user
     public func authenticateUser(completion: @escaping (Result<String, Error>) -> Void) {
-        biometricsManager.authenticateUser(completion: completion)
+        biometricsManager.authenticateUser { [weak self] result in
+            guard let self = self else {
+               return
+            }
+            self.setUpProperties(from: self.biometricsManager.state)
+            completion(result)
+        }
+    }
+
+    private func setUpProperties(from state: BiometricsState) {
+        self.informationText = BiometricsViewModel.information(from: state)
+        self.isSettingsButtonHidden = BiometricsViewModel.hideSettingsButton(from: state)
+        self.isBiometricLoginEnabled = BiometricsViewModel.enableBiometricLogin(from: state)
     }
 
     // Pull out into state extension
-    private func information(from state: BiometricsState) -> String {
+    private static func information(from state: BiometricsState) -> String {
         switch state {
         case .notAvailable(let error):
             return error.errorMessage()
@@ -45,14 +72,15 @@ class BiometricsViewModel: ObservableObject {
             return "FaceID authentication is enabled, it can be disabled in Settings"
 
         case .faceIDAvailableUserDisabled:
-            return """
-            FaceID authentication has been turned off, it can be reenabled in Settings,
-            Passcode authentication will be used
-            """
+            return
+                """
+                FaceID authentication has been turned off, it can be reenabled in Settings,
+                Passcode authentication will be used
+                """
         }
     }
 
-    private func hideSettingsButton(from state: BiometricsState) -> Bool {
+    private static func hideSettingsButton(from state: BiometricsState) -> Bool {
         switch state {
         case .touchIdAvailable,
              .notAvailable,
@@ -67,7 +95,7 @@ class BiometricsViewModel: ObservableObject {
         }
     }
 
-    private func enableBiometricLogin(from state: BiometricsState) -> Bool {
+    private static func enableBiometricLogin(from state: BiometricsState) -> Bool {
         switch state {
         case .touchIdAvailable,
              .faceIDAvailableUserEnabled,
@@ -81,23 +109,9 @@ class BiometricsViewModel: ObservableObject {
         }
     }
 
-    private func setUpBindings() {
-        biometricsManager
-            .$biometricsState
-            .map(self.information)
-            .assign(to: \.informationText, on: self)
-            .store(in: &cancellables)
-
-        biometricsManager
-            .$biometricsState
-            .map(self.hideSettingsButton)
-            .assign(to: \.isSettingsButtonHidden, on: self)
-            .store(in: &cancellables)
-
-        biometricsManager
-            .$biometricsState
-            .map(self.enableBiometricLogin)
-            .assign(to: \.isBiometricLoginEnabled, on: self)
-            .store(in: &cancellables)
+    deinit {
+        if let observer = observer {
+            notificationCenter.removeObserver(observer)
+        }
     }
 }
