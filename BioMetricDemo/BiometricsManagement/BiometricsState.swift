@@ -1,7 +1,7 @@
 /// Biometrics State
 enum BiometricsState {
     /// Biometrics are not available on the device
-    case notAvailable
+    case notAvailable(BiometricAuthenticationError)
     /// Biometrics are available but the user has declined usage
     case availableUserDenied
     /// Touch ID is available but the user has yet to give permission for  usage

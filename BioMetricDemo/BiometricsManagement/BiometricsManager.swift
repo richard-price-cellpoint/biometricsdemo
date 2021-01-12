@@ -4,12 +4,7 @@ import SwiftUI
 internal let kFaceIDKey = "FaceIDAccepted"
 
 class BiometricsManager {
-    enum BioError: Error {
-        case General
-        case NoEvaluate
-    }
-
-    @Published private ( set ) var biometricsState: BiometricsState = .notAvailable
+    @Published private ( set ) var biometricsState: BiometricsState = .notAvailable(.other)
 
     private var biometryType: LABiometryType {
         return context.biometryType
@@ -32,8 +27,13 @@ class BiometricsManager {
     }
 
     func determineBiometricsState() {
-        canPerformOwnerAuthentication()
-        canPerformBiometricAuthentication()
+        var error: NSError?
+        canPerformOwnerAuthentication(error: &error)
+
+        var authenticationError: BiometricAuthenticationError?
+        if let laError = error as? LAError  {
+            authenticationError = BiometricAuthenticationError.from(error: laError, biometryType: context.biometryType)
+        }
 
         switch (
             canOwnerAuthenticate,
@@ -41,6 +41,8 @@ class BiometricsManager {
             hasAcceptedBiometricTerms,
             biometryType
         ) {
+
+        // TODO: Richard. Handle not enrolled case
 
         case (true, true, false, .touchID):
             biometricsState = .touchIdAvailableNoUserPermission
@@ -61,40 +63,30 @@ class BiometricsManager {
             biometricsState = .faceIDAvailableUserDisabled
 
         case (false, _, _, _):
-            biometricsState = .notAvailable
+            biometricsState = .notAvailable(authenticationError ?? .other)
 
         default:
-            biometricsState = .notAvailable
+            biometricsState = .notAvailable(authenticationError ?? .other)
         }
     }
 
-    private func canPerformOwnerAuthentication()  {
-        var error: NSError?
-        canOwnerAuthenticate = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error)
+    private func canPerformOwnerAuthentication(error: NSErrorPointer)  {
+        canOwnerAuthenticate = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: error)
         print("Error: \(String(describing: error))")
+        if error != nil {
+            canPerformBiometricAuthentication(error: error)
+        }
     }
 
-    private func canPerformBiometricAuthentication() {
-        var error: NSError?
-        canBiometricallyAuthenticate = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+    private func canPerformBiometricAuthentication(error: NSErrorPointer) {
+        canBiometricallyAuthenticate = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: error)
         print("Error: \(String(describing: error))")
     }
-
-//    func resetToInitialState(andRecreate newContext: LAContextProtocol = LAContext()) {
-////        canOwnerAuthenticate = false
-////        canBiometricallyAuthenticate = false
-////        hasAcceptedBiometricTerms = false
-//////        biometricsState = .notAvailable
-////        context.invalidate()
-////
-////        context = newContext
-////        determineBiometricsState()
-//    }
 
     func authenticateUser(completion: @escaping (Result<String, Error>) -> Void) {
         determineBiometricsState()
-        if case .notAvailable = biometricsState {
-            completion( .failure(BioError.NoEvaluate) )
+        if case .notAvailable(let error) = biometricsState {
+            completion( .failure(error) )
         }
 
         let loginReason = "Log in with Biometrics"
@@ -108,10 +100,19 @@ class BiometricsManager {
                     completion(.success("Success"))
                 }
             } else {
-                self?.determineBiometricsState()
-                switch evaluateError {
-                default: completion(.failure(BiometricsManager.BioError.General))
+                guard let error = evaluateError else {
+                    fatalError("Must have an error if not success")
                 }
+                self?.determineBiometricsState()
+                guard let laError = error as? LAError else {
+                    completion(.failure(error))
+                    return
+                }
+                let authenticationError = BiometricAuthenticationError.from(
+                    error: laError,
+                    biometryType: self?.context.biometryType ?? .none
+                )
+                completion(.failure(authenticationError))
             }
         }
     }

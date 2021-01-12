@@ -18,10 +18,6 @@ class BiometricsViewModel: ObservableObject {
         setUpBindings()
     }
 
-//    func resetToInitialState() {
-//        biometricsManager.resetToInitialState()
-//    }
-
     func authenticateUser(completion: @escaping (Result<String, Error>) -> Void) {
         biometricsManager.authenticateUser(completion: completion)
     }
@@ -33,8 +29,8 @@ class BiometricsViewModel: ObservableObject {
     // Pull out into state extension
     private func information(from state: BiometricsState) -> String {
         switch state {
-        case .notAvailable:
-            return "Biometric authentication is not available"
+        case .notAvailable(let error):
+            return error.errorMessage()
 
         case .availableUserDenied:
             // TODO: How is this accessed? - should be tapped 'do not allow

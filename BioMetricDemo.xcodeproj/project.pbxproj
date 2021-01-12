@@ -13,7 +13,8 @@
 		1B576645255D93C1000F7590 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B576644255D93C1000F7590 /* Assets.xcassets */; };
 		1B576648255D93C1000F7590 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B576647255D93C1000F7590 /* Preview Assets.xcassets */; };
 		1B57664B255D93C1000F7590 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1B576649255D93C1000F7590 /* LaunchScreen.storyboard */; };
-		1B576656255D93C1000F7590 /* BioMetricDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B576655255D93C1000F7590 /* BioMetricDemoTests.swift */; };
+		1B576656255D93C1000F7590 /* BioMetricTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B576655255D93C1000F7590 /* BioMetricTests.swift */; };
+		1B67593225AD9CEC0082BB1E /* BiometricAuthenticationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B67593125AD9CEC0082BB1E /* BiometricAuthenticationError.swift */; };
 		1B9416D7255E949E007D05B5 /* LoggedInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9416D6255E949E007D05B5 /* LoggedInView.swift */; };
 		1B9416DC255EA9C0007D05B5 /* BiometricsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9416DB255EA9C0007D05B5 /* BiometricsManager.swift */; };
 		1B9416E2255EAA2D007D05B5 /* LAContextProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9416E1255EAA2D007D05B5 /* LAContextProtocol.swift */; };
@@ -41,8 +42,9 @@
 		1B57664A255D93C1000F7590 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1B57664C255D93C1000F7590 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1B576651255D93C1000F7590 /* BioMetricDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BioMetricDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		1B576655255D93C1000F7590 /* BioMetricDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BioMetricDemoTests.swift; sourceTree = "<group>"; };
+		1B576655255D93C1000F7590 /* BioMetricTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BioMetricTests.swift; sourceTree = "<group>"; };
 		1B576657255D93C1000F7590 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1B67593125AD9CEC0082BB1E /* BiometricAuthenticationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuthenticationError.swift; sourceTree = "<group>"; };
 		1B9416D6255E949E007D05B5 /* LoggedInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggedInView.swift; sourceTree = "<group>"; };
 		1B9416DB255EA9C0007D05B5 /* BiometricsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricsManager.swift; sourceTree = "<group>"; };
 		1B9416E1255EAA2D007D05B5 /* LAContextProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LAContextProtocol.swift; sourceTree = "<group>"; };
@@ -113,7 +115,7 @@
 		1B576654255D93C1000F7590 /* BioMetricDemoTests */ = {
 			isa = PBXGroup;
 			children = (
-				1B576655255D93C1000F7590 /* BioMetricDemoTests.swift */,
+				1B576655255D93C1000F7590 /* BioMetricTests.swift */,
 				1B576657255D93C1000F7590 /* Info.plist */,
 			);
 			path = BioMetricDemoTests;
@@ -126,6 +128,7 @@
 				1B975D5225A75A0100521AD0 /* BiometricsState.swift */,
 				1B975D4E25A74D5A00521AD0 /* BiometricsViewModel.swift */,
 				1B9416E1255EAA2D007D05B5 /* LAContextProtocol.swift */,
+				1B67593125AD9CEC0082BB1E /* BiometricAuthenticationError.swift */,
 			);
 			path = BiometricsManagement;
 			sourceTree = "<group>";
@@ -238,6 +241,7 @@
 				1B9416E2255EAA2D007D05B5 /* LAContextProtocol.swift in Sources */,
 				1B57663F255D93BF000F7590 /* AppDelegate.swift in Sources */,
 				1B975D5325A75A0100521AD0 /* BiometricsState.swift in Sources */,
+				1B67593225AD9CEC0082BB1E /* BiometricAuthenticationError.swift in Sources */,
 				1B9416D7255E949E007D05B5 /* LoggedInView.swift in Sources */,
 				1B576641255D93BF000F7590 /* SceneDelegate.swift in Sources */,
 				1B975D4F25A74D5A00521AD0 /* BiometricsViewModel.swift in Sources */,
@@ -250,7 +254,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B576656255D93C1000F7590 /* BioMetricDemoTests.swift in Sources */,
+				1B576656255D93C1000F7590 /* BioMetricTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
