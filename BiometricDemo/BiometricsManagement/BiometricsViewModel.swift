@@ -1,29 +1,25 @@
 import Combine
 import SwiftUI
 
+/// Biometrics View Model
 class BiometricsViewModel: ObservableObject {
-    private var biometricsManager: BiometricsManager
-
     @Published var informationText = "Biometric authentication is not available"
-
     @Published var isSettingsButtonHidden = false
-
     @Published var isBiometricLoginEnabled = false
 
+    private var biometricsManager: BiometricsManager
     private var cancellables: [AnyCancellable] = []
 
-
-    init(biometricsManager: BiometricsManager = BiometricsManager() ) {
+    /// Init
+    public init(biometricsManager: BiometricsManager = BiometricsManager() ) {
         self.biometricsManager = biometricsManager
         setUpBindings()
     }
 
-    func authenticateUser(completion: @escaping (Result<String, Error>) -> Void) {
-        biometricsManager.authenticateUser(completion: completion)
-    }
 
-    func determineBiometricsState() {
-        biometricsManager.determineBiometricsState()
+    /// Authenticate user
+    public func authenticateUser(completion: @escaping (Result<String, Error>) -> Void) {
+        biometricsManager.authenticateUser(completion: completion)
     }
 
     // Pull out into state extension
@@ -86,19 +82,19 @@ class BiometricsViewModel: ObservableObject {
     }
 
     private func setUpBindings() {
-        self.biometricsManager
+        biometricsManager
             .$biometricsState
             .map(self.information)
             .assign(to: \.informationText, on: self)
             .store(in: &cancellables)
 
-        self.biometricsManager
+        biometricsManager
             .$biometricsState
             .map(self.hideSettingsButton)
             .assign(to: \.isSettingsButtonHidden, on: self)
             .store(in: &cancellables)
 
-        self.biometricsManager
+        biometricsManager
             .$biometricsState
             .map(self.enableBiometricLogin)
             .assign(to: \.isBiometricLoginEnabled, on: self)

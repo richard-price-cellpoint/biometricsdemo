@@ -1,11 +1,3 @@
-//
-//  ContentView.swift
-//  BioMetricDemo
-//
-//  Created by Richard Price on 12/11/2020.
-//  Copyright © 2020 Cell Point Digital. All rights reserved.
-//
-
 import SwiftUI
 
 struct ContentView: View {
@@ -95,11 +87,7 @@ struct ContentView: View {
             VStack {
                 NavigationLink(
                     "",
-                    destination: LoggedInView()
-                        .onDisappear(perform: {
-                            // TODO: Richard. Remove this
-                            self.viewModel.determineBiometricsState()
-                        }),
+                    destination: LoggedInView(),
                     isActive: $shouldGoToLoggedInView
                 )
                 headerText
@@ -130,7 +118,6 @@ struct ContentView: View {
     }
 
     private func moveToNewScreen () {
-        viewModel.determineBiometricsState()
         shouldGoToLoggedInView = true
     }
 

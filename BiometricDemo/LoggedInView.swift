@@ -1,11 +1,3 @@
-//
-//  LoggedInView.swift
-//  BioMetricDemo
-//
-//  Created by Richard Price on 13/11/2020.
-//  Copyright © 2020 Cell Point Digital. All rights reserved.
-//
-
 import SwiftUI
 
 struct LoggedInView: View {
