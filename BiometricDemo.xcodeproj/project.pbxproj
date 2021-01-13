@@ -31,7 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1B1C617125AE01A200C1772F /* BiometricsManagement */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BiometricsManagement; path = BiometricDemo/BiometricsManagement; sourceTree = "<group>"; };
+		1B1C617125AE01A200C1772F /* BiometricsManagement */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BiometricsManagement; sourceTree = "<group>"; };
 		1B22B6F025AE07F700553829 /* NotificationCenterInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterInterface.swift; sourceTree = "<group>"; };
 		1B57663B255D93BF000F7590 /* BiometricDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BiometricDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B57663E255D93BF000F7590 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -77,11 +77,11 @@
 		1B576632255D93BF000F7590 = {
 			isa = PBXGroup;
 			children = (
-				1B1C617125AE01A200C1772F /* BiometricsManagement */,
 				1B57663D255D93BF000F7590 /* BiometricDemo */,
 				1B576654255D93C1000F7590 /* BiometricDemoTests */,
-				1B57663C255D93BF000F7590 /* Products */,
+				1B1C617125AE01A200C1772F /* BiometricsManagement */,
 				1B1C617425AE01DF00C1772F /* Frameworks */,
+				1B57663C255D93BF000F7590 /* Products */,
 			);
 			sourceTree = "<group>";
 		};

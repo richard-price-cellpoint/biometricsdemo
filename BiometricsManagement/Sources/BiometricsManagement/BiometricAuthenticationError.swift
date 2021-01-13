@@ -1,7 +1,7 @@
 import LocalAuthentication
 
 /// Biometric authentication error
-public enum BiometricAuthenticationError: Error {
+public enum BiometricAuthenticationError: Equatable, Error {
     /// Authentication canceleld by user
     case cancelledByUser
 
@@ -139,7 +139,7 @@ public enum BiometricAuthenticationError: Error {
             return BiometricAuthenticationError.lockoutPasscodeMessage(for: .touchID)
 
         case .faceIdFailed:
-            return BiometricAuthenticationError.failedMessage(for: .touchID)
+            return BiometricAuthenticationError.failedMessage(for: .faceID)
 
         case .touchIdFailed:
             return BiometricAuthenticationError.failedMessage(for: .touchID)
@@ -182,7 +182,7 @@ public enum BiometricAuthenticationError: Error {
 
     private static func failedMessage(for biometryType: LABiometryType) -> String {
         let biometryTypeString = biometryType == .faceID ? "Face ID" : "Touch ID"
-        let faceOrFingerPrint = biometryType == .faceID ? "face" : "fingerPrint"
+        let faceOrFingerPrint = biometryType == .faceID ? "face" : "fingerprint"
         return
             """
             \(biometryTypeString) does not recognize your face.

@@ -65,9 +65,6 @@ public class BiometricsManager {
         case (true, false, true, .faceID):
             biometricsState = .faceIDAvailableUserDisabled
 
-        case (false, _, _, _):
-            biometricsState = .notAvailable(authenticationError ?? .other)
-
         default:
             biometricsState = .notAvailable(authenticationError ?? .other)
         }
@@ -109,7 +106,8 @@ public class BiometricsManager {
                 }
             } else {
                 guard let error = evaluateError else {
-                    fatalError("Must have an error if not a success")
+                    completion(.failure(BiometricAuthenticationError.other))
+                    return
                 }
                 self.determineBiometricsState()
                 guard let laError = error as? LAError else {
